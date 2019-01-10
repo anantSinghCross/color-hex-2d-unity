@@ -69,9 +69,8 @@ public class MenuManager : MonoBehaviour
 
     private void RequestBanner()
     {
-        //adUnitId = ca-app-pub-6755498980044352/7620930411
         //adUnitId for testing = ca-app-pub-3940256099942544/6300978111
-        string adUnitId = "ca-app-pub-6755498980044352/7620930411";
+        string adUnitId = "ca-app-pub-3940256099942544/6300978111";
         bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
 
         AdRequest request = new AdRequest.Builder().Build();
