@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Hexagon : MonoBehaviour
 {
@@ -15,7 +13,6 @@ public class Hexagon : MonoBehaviour
         transform.localScale = Vector3.one * 10f;
     }
 
-    // Update is called once per frame
     void Update()
     {
         transform.localScale -= Vector3.one * shrinkSpeed * Time.deltaTime;

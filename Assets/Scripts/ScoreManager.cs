@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour
@@ -10,12 +8,12 @@ public class ScoreManager : MonoBehaviour
     public Text endScoreText;
     private int highScore = 0;
     public Text highScoreText;
+    public Text BEST;
 
     private void Start()
     {
         highScore = PlayerPrefs.GetInt("HighScore", 0);
         Debug.Log(highScore);
-        //highScore = 0;
     }
 
     public void increaseScore()
@@ -31,10 +29,9 @@ public class ScoreManager : MonoBehaviour
         if (highScore < score)
         {
             PlayerPrefs.SetInt("HighScore", score);
-            
-            //Debug.Log("highscore = " + score + "/n (HighScore, score);" + PlayerPrefs.GetInt("HighScore", score));
+            BEST.text = "NEW BEST !";
         }
-        highScoreText.text = highScore.ToString();
+        highScoreText.text = PlayerPrefs.GetInt("HighScore", score).ToString();
     }
     
 }

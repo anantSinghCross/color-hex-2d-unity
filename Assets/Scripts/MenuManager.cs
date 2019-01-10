@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using GoogleMobileAds.Api;
@@ -19,11 +17,23 @@ public class MenuManager : MonoBehaviour
     public Text scoreText;
     public static bool isGamePaused = false;
     ScoreManager scoreManager;
+    public AudioSource source;
+    public AudioClip deathClip;
+    private bool isAdRequested;
+    public Text VOLUME;
+    private float originalVolume;
 
-    private BannerView bannerView;
+    public BannerView bannerView;
+
 
     void Start()
     {
+        originalVolume = PlayerPrefs.GetFloat("Volume",.2f);
+        source = GameObject.Find("MenuManager").GetComponent<AudioSource>();
+        source.Play();
+        source.volume = originalVolume;
+        VOLUME.text = PlayerPrefs.GetString("VolumeText", "VOLUME : ON");
+
         player = GameObject.Find("Player");
         knob = GameObject.Find("Knob");
         spawner = GameObject.Find("Spawner");
@@ -34,7 +44,6 @@ public class MenuManager : MonoBehaviour
         instructionsPanel = GameObject.Find("InstructionsPanel");
         scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
 
-
         player.SetActive(false);
         knob.SetActive(false);
         spawner.SetActive(false);
@@ -44,20 +53,31 @@ public class MenuManager : MonoBehaviour
         instructionsPanel.SetActive(false);
         scoreText.text = "";
 
-
         string appId = "ca-app-pub-6755498980044352~2620595610";
         MobileAds.Initialize(appId);
-        this.RequestBanner();
+        RequestBanner();
     }
+
+    private void Update()
+    {
+        if (isAdRequested == true)
+        {
+            BannerHide();
+            isAdRequested = false;
+        }
+    }
+
     private void RequestBanner()
     {
-        string adUnitId = "ca-app-pub-3940256099942544/6300978111";
+        //adUnitId = ca-app-pub-6755498980044352/7620930411
+        //adUnitId for testing = ca-app-pub-3940256099942544/6300978111
+        string adUnitId = "ca-app-pub-6755498980044352/7620930411";
         bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
 
         AdRequest request = new AdRequest.Builder().Build();
 
         bannerView.LoadAd(request);
-        BannerHide();
+        isAdRequested = true;
     }
 
     public void BannerHide()
@@ -70,8 +90,15 @@ public class MenuManager : MonoBehaviour
         bannerView.Show();
     }
 
+    public void BannerDestroy()
+    {
+        bannerView.Destroy();
+    }
+
     public void PlayGame()
     {
+        //destroy the ads when starting the game
+        BannerDestroy();
         player.SetActive(true);
         knob.SetActive(true);
         spawner.SetActive(true);
@@ -80,7 +107,9 @@ public class MenuManager : MonoBehaviour
         endMenuPanel.SetActive(false);
         scoreTextObj.SetActive(true);
         scoreText.text = "0";
-        //hide ad
+        //create but hide the ads so that they are available but hidden and
+        //can be shown whenever needed
+        RequestBanner();
         BannerHide();
     }
 
@@ -93,27 +122,33 @@ public class MenuManager : MonoBehaviour
         scoreTextObj.SetActive(false);
         endMenuPanel.SetActive(true);
         scoreManager.correctScore();
+        source.Stop();
+        source.PlayOneShot(deathClip, PlayerPrefs.GetFloat("Volume",.2f));
         //show ad
         BannerShow();
     }
 
     public void RestartGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        
         Time.timeScale = 1f;
+        //destroy ad
+        BannerDestroy();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
     }
 
     public void ReplayGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Time.timeScale = 1f;
-        //show ad
-        BannerShow();
+        //destroy ad
+        BannerDestroy();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
     }
 
     public void QuitGame()
     {
-        //Debug.Log("QUIT GAME");
         Application.Quit();
     }
 
@@ -121,7 +156,7 @@ public class MenuManager : MonoBehaviour
     {
         isGamePaused = true;
         pauseMenuPanel.SetActive(true);
-
+        //source.volume = (source.volume)/2;
         //show ad
         BannerShow();
         Time.timeScale = 0f;
@@ -130,6 +165,7 @@ public class MenuManager : MonoBehaviour
 
     public void ResumeGame()
     {
+        //source.volume = originalVolume;
         Time.timeScale = 1f;
         //hide ad
         BannerHide();
@@ -146,5 +182,23 @@ public class MenuManager : MonoBehaviour
     {
         instructionsPanel.SetActive(false);
         mainMenuPanel.SetActive(true);
+    }
+
+    public void ToggleVolume()
+    {
+        if (PlayerPrefs.GetFloat("Volume") > 0f)
+        {
+            source.volume = 0f;
+            PlayerPrefs.SetFloat("Volume",0f);
+            VOLUME.text = "VOLUME : OFF";
+            PlayerPrefs.SetString("VolumeText", VOLUME.text);
+        }
+        else
+        {
+            source.volume = .2f;
+            PlayerPrefs.SetFloat("Volume", .2f);
+            VOLUME.text = "VOLUME : ON";
+            PlayerPrefs.SetString("VolumeText", VOLUME.text);
+        }
     }
 }
