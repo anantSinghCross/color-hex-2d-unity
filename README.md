@@ -1,6 +1,7 @@
 # Color Hex 2D Game
-A Hyper-Casual game that I'm developing for Android using Unity Engine.
+A Hyper-Casual game that I have developed for Android using Unity Engine.
 
 ***
 
-Will be updating the *readme.md* as well as the project files within a few days.
+### PlayStore Link
+[Color Hexagon](https://play.google.com/store/apps/details?id=com.CrossBox.ColorHexagon) rolled out on 8 Jan, 2019.
