@@ -53,7 +53,7 @@ public class MenuManager : MonoBehaviour
         instructionsPanel.SetActive(false);
         scoreText.text = "";
 
-        string appId = "ca-app-pub-6755498980044352~2620595610";
+        string appId = "<appID here>";
         MobileAds.Initialize(appId);
         RequestBanner();
     }
